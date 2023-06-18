@@ -1,2 +1,2 @@
 FROM tomcat  
-COPY /target* /home/ubuntu/tomcat9/webapps/
+COPY /target* /usr/local/tomcat/webapps
