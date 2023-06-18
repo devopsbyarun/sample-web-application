@@ -1,0 +1,43 @@
+pipeline {
+    agent any 
+    stages {
+        stage ('code checkout from git hub') {
+            steps {
+                git branch: 'master', url: 'https://github.com/devopsbyarun/sample-web-application.git'
+            }
+        }
+        stage ('build with maven') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+        stage ('build docker imag') {
+            steps {
+               sh 'docker build -t devopsbyarun/sample .'
+            }
+        }
+        stage ('pushing docker image to docker hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'org-dc', passwordVariable: 'docpasswd', usernameVariable: 'devopsbyarun')]) {
+               sh "docker login -u devopsbyarun -p ${docpasswd}"
+               sh 'docker push devopsbyarun/sample'
+               }
+            }
+        }
+        stage ('deploy to localhost') {
+            steps {
+                sh ''' 
+                   #!/bin/bash
+                   docker stop app-v1 || true
+                   docker rm app-v1 || true
+                   docker run --name=app-v1 -p  4000:9090 -itd devopsbyarun/sample
+                   '''
+            }
+        }
+        
+    }
+}
+
+
+
+##for tomcat application no need for deployment we can directly copy the target path to webapps folder and tomcat will show the application on the web 
