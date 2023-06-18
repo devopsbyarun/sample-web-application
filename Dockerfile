@@ -1,3 +1,3 @@
 FROM tomcat 
 WORKDIR webapps 
-COPY target/* /home/ubuntu/tomcat9/webapps/
+COPY /var/lib/jenkins/workspace/web-application/target* /home/ubuntu/tomcat9/webapps/
